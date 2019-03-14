@@ -1,0 +1,17 @@
+#! /usr/bin/env node
+
+var fs = require('fs');
+var child_process = require('child_process');
+
+var basedir = `/usr/local/src/symfony/${process.env.SYMFONY_VER}`;
+var filename = `${basedir}/composer.json`;
+
+var composer = JSON.parse(fs.readFileSync(filename));
+for (var i = 2; i < process.argv.length; ++i) {
+  var item = process.argv[i].split(':');
+
+  composer['autoload']['psr-4'][item[0]] = item[1];
+}
+
+fs.writeFileSync(filename, JSON.stringify(composer));
+child_process.exec(`composer --working-dir=${basedir} dumpautoload`)
